@@ -84,7 +84,9 @@
             output += `<br><strong>Average Marks:</strong> ${avg.toFixed(2)}`;
             output += '</ul>';
             document.getElementById('result').innerHTML = output;
-            // document.getElementById('result').textContent = 'Passed Students: ' + students.filter(s => parseFloat(s.marks) >= 40).length;
+            const topper = students.reduce((max, s) => parseFloat(s.marks) > parseFloat(max.marks) ? s : max, students[0]);
+            output += `<br><strong>Topper:</strong> ${topper.name} (${topper.marks})`;
+            document.getElementById('result').innerHTML = output;
         });
     </script>
 </body>
