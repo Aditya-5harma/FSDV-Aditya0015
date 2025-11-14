@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        p {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            font-size: 2rem;
+        }
+
+        #mysubmit {
+            font-size: 1rem;
+            background-color: lightblue;
+            border-radius: 12px;
+            padding: 10px;
+            margin: 1%;
+        }
+
+        #mysubmit:hover {
+            font-size: 1rem;
+            background-color: rgb(37, 171, 215);
+            border-radius: 12px;
+            box-shadow: 3px 3px 5px #000;
+            padding: 10px;
+            margin: 1%;
+        }
+
+        input,
+        label {
+            font-size: 1rem;
+            margin: 5px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <label for="text"> Enter the Student Name</label> <input type="text" id="std" > <br>
+    <label for="text"> Enter the marks</label> <input type="text" id="marks" > <br>
+    <button id="sbmt">Submit: </button>
+    <p id="result"></p>
+    <script>
+        const students = [];
+
+        document.getElementById('sbmt').addEventListener('click', function() {
+            const name = document.getElementById('std').value.trim();
+            const marks = document.getElementById('marks').value.trim();
+            if(isNaN(marks)){
+                document.getElementById('result').textContent = 'Please enter valid marks.';
+                return;
+            }
+            if (name && marks) {
+                students.push({ name, marks });
+                document.getElementById('std').value = '';
+                document.getElementById('marks').value = '';
+                document.getElementById('result').textContent = 'Student added!';
+            } else {
+                document.getElementById('result').textContent = 'Please enter both name and marks.';
+            }
+        });
+
+        // Create and add the "Show Results" button
+        const showBtn = document.createElement('button');
+        showBtn.textContent = 'Show Results';
+        document.body.appendChild(showBtn);
+
+        showBtn.addEventListener('click', function() {
+            if (students.length === 0) {
+                document.getElementById('result').textContent = 'No students added yet.';
+                return;
+            }
+            let output = '<ul>';
+            output += students.map(s => `<li>Name: ${s.name}, Marks: ${s.marks}</li>`).join('');
+            // List of passed students
+            const passed = students.filter(s => parseFloat(s.marks) >= 40);
+            output += '<br><strong>Passed Students:</strong><ul>';
+            passed.forEach(s => {
+                output += `<li>Name: ${s.name}, Marks: ${s.marks}</li>`;
+            });
+            output += '</ul>';
+            // Average marks
+            const avg = students.reduce((sum, s) => sum + parseFloat(s.marks), 0) / students.length;
+            output += `<br><strong>Average Marks:</strong> ${avg.toFixed(2)}`;
+            output += '</ul>';
+            document.getElementById('result').innerHTML = output;
+            const topper = students.reduce((max, s) => parseFloat(s.marks) > parseFloat(max.marks) ? s : max, students[0]);
+            output += `<br><strong>Topper:</strong> ${topper.name} (${topper.marks})`;
+            document.getElementById('result').innerHTML = output;
+        });
+    </script>
+</body>
+</html>
