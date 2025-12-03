@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced To-Do List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* === NEW: Keyframe animations for tasks === */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* General Body Styling */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* NEW: Subtle gradient background for depth */
+            background: linear-gradient(135deg, #ece9e6 0%, #ffffff 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px; /* NEW: Padding for smaller screens */
+            box-sizing: border-box; /* NEW: Ensures padding is included in total width/height */
+        }
+
+        /* Main Container */
+        .container {
+            background: rgba(255, 255, 255, 0.9); /* NEW: Slightly transparent for a modern effect */
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            /* NEW: Backdrop filter for a frosted glass look (supported in modern browsers) */
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2); /* NEW: Subtle border */
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+            /* NEW: Subtle text shadow for the title */
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+
+        /* Input Area Styling */
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        #taskInput {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s, box-shadow 0.3s; /* NEW: Added box-shadow to transition */
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: #007bff;
+            /* NEW: Added a glow effect on focus for better accessibility */
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+        }
+
+        #addBtn {
+            padding: 12px 20px;
+            border: none;
+            background: #007bff;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s; /* NEW: Added transform to transition */
+        }
+
+        #addBtn:hover {
+            background: #0056b3;
+            /* NEW: Button grows slightly on hover */
+            transform: scale(1.05);
+        }
+
+        /* Task List Styling */
+        #taskList {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            min-height: 50px; /* NEW: Ensures the empty message is visible */
+            position: relative; /* NEW: Required for the ::after pseudo-element */
+        }
+        
+        /* NEW: Message shown when the task list is empty */
+        #taskList:empty::after {
+            content: 'No tasks yet. Add one above! ✨';
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 20px;
+            color: #888;
+            font-style: italic;
+        }
+
+        #taskList li {
+            background: #f9f9f9;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background-color 0.3s, opacity 0.4s;
+            /* NEW: Apply the fadeIn animation when a task is added */
+            animation: fadeIn 0.4s ease-in-out;
+            /* NEW: Ensures long task names don't break the layout */
+            word-break: break-word;
+        }
+        
+        #taskList li:hover {
+            background-color: #f1f1f1;
+        }
+
+        /* Task text styling */
+        #taskList li span {
+            flex-grow: 1;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        
+        /* Style for completed tasks */
+        #taskList li.completed {
+            /* NEW: Fades out the entire task item when completed */
+            opacity: 0.6;
+        }
+
+        #taskList li.completed span {
+            text-decoration: line-through;
+            color: #555; /* NEW: Slightly darker than before for better contrast on fade */
+        }
+
+        /* Delete Button for each task */
+        .delete-btn {
+            background: transparent;
+            border: none;
+            color: #ff3b30;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 5px;
+            opacity: 0.7;
+            transition: opacity 0.3s, transform 0.2s;
+        }
+
+        .delete-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Clear All Button */
+        #clearBtn {
+            display: block;
+            width: 100%;
+            margin-top: 25px;
+            padding: 12px 16px;
+            border: none;
+            background: #dc3545;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, opacity 0.3s; /* NEW: Added opacity to transition */
+        }
+
+        #clearBtn:hover {
+            background: #c82333;
+        }
+        
+        /* NEW: Style for when the button is disabled */
+        #clearBtn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My To-Do List</h1>
+        <div class="input-area">
+            <input type="text" id="taskInput" placeholder="Enter a new task...">
+            <button id="addBtn" aria-label="Add Task">Add</button>
+        </div>
+        <ul id="taskList"></ul>
+        <button id="clearBtn">Clear All Tasks</button>
+    </div>
+
+<script>
+    // === DOM Element References ===
+    const taskInput = document.getElementById('taskInput');
+    const addBtn = document.getElementById('addBtn');
+    const taskList = document.getElementById('taskList');
+    const clearBtn = document.getElementById('clearBtn');
+
+    // === Functions ===
+
+    /**
+     * Updates the state of the 'Clear All' button based on whether tasks exist.
+     */
+    function updateClearButtonState() {
+        if (taskList.children.length > 0) {
+            clearBtn.disabled = false;
+        } else {
+            clearBtn.disabled = true;
+        }
+    }
+
+    function createTaskElement(task) {
+        const li = document.createElement('li');
+        if (task.completed) {
+            li.classList.add('completed');
+        }
+        const taskSpan = document.createElement('span');
+        taskSpan.textContent = task.text;
+        li.appendChild(taskSpan);
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('delete-btn');
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.setAttribute('aria-label', 'Delete task');
+        li.appendChild(deleteBtn);
+        return li;
+    }
+
+    function addTask() {
+        const taskText = taskInput.value.trim();
+        if (taskText === '') {
+            alert('Please enter a task.');
+            return;
+        }
+        const task = { text: taskText, completed: false };
+        const li = createTaskElement(task);
+        taskList.appendChild(li);
+        taskInput.value = '';
+        saveTasks();
+    }
+
+    function saveTasks() {
+        const tasks = [];
+        document.querySelectorAll('#taskList li').forEach(li => {
+            tasks.push({
+                text: li.querySelector('span').textContent,
+                completed: li.classList.contains('completed')
+            });
+        });
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        updateClearButtonState(); // Update button state every time we save
+    }
+
+    function loadTasks() {
+        const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        tasks.forEach(task => {
+            const li = createTaskElement(task);
+            taskList.appendChild(li);
+        });
+        updateClearButtonState(); // Update button state on initial load
+    }
+
+    // === Event Listeners ===
+    document.addEventListener('DOMContentLoaded', loadTasks);
+    addBtn.addEventListener('click', addTask);
+    taskInput.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            addTask();
+        }
+    });
+
+    taskList.addEventListener('click', (event) => {
+        const clickedElement = event.target;
+        if (clickedElement.closest('.delete-btn')) {
+            const li = clickedElement.closest('li');
+            // Add a class for fade-out animation (optional but cool)
+            li.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            li.style.opacity = '0';
+            li.style.transform = 'translateX(20px)';
+            // Remove the element after the animation finishes
+            setTimeout(() => {
+                li.remove();
+                saveTasks();
+            }, 400);
+        } else if (clickedElement.tagName === 'SPAN') {
+            const li = clickedElement.closest('li');
+            li.classList.toggle('completed');
+            saveTasks();
+        }
+    });
+
+    clearBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all tasks?')) {
+            taskList.innerHTML = '';
+            saveTasks();
+        }
+    });
+</script>
+</body>
+</html>
