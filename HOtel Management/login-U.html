@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User-Admin</title>
+    <style>
+        body {
+            display: flex; align-items: center; height: 100vh; margin: 0;
+        }
+        .logo {
+            background-image: linear-gradient(to right, #00ffff, #00ff10); flex-direction: column; 
+            width: 500px; height: 100vh; display: flex; justify-content: center; align-items: center;
+        }
+        .logo img {
+            max-width: 100%; max-height: 100%;
+        }
+        .login {
+            display: flex; flex-direction: column; align-items: center; position: relative; left: 250px;
+        }
+        .login img, h1 {
+            position: relative; height: 130px;
+        }
+        input {
+            text-align: center; height: 30px; width: 250px;
+            border-radius: 20px; border: 2px solid black; padding-left: 35px;
+        }
+        input:hover {
+            text-align: center; height: 30px; width: 250px;
+            border-radius: 23px; border: 2px solid rgb(0, 149, 255); padding-left: 35px;
+        }
+        #ID {
+            background-image: url(https://img.freepik.com/premium-vector/personal-id-icon-logo-vector-design_810420-795.jpg);
+            background-size: 25px 25px; background-repeat: no-repeat; background-position: left center;
+        }
+        #Pass {
+            background-image: url(https://cdn-icons-png.flaticon.com/512/3596/3596123.png);
+            background-size: 25px 25px; background-repeat: no-repeat; background-position: left center;
+        }
+        button{
+            background-color: #7338A0; height: 50px; width: 200px; margin: 30px; border-radius: 30px;
+        }
+        button:hover{
+            background-color:rgb(0, 149, 255); height: 50px; width: 200px; margin: 30px; border-radius: 30px;
+        }
+        .user{
+            position: fixed; top: 10px; right: 10px;
+        }
+        #Admin{
+            background-color: #aa1de2; color: #FFD6FF; height: 30px; width: 150px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="Hotel logo.png" alt="">
+        <a href="admin-login.html"><button id="Admin">Admin-Login</button></a>
+    </div>
+    <div class="login">
+        <a class="user" href="Web_Page.html"><img src="https://thumbs.dreamstime.com/b/cancel-button-red-color-white-background-website-ui-material-cancel-button-red-color-white-background-207562036.jpg" alt=""></a>
+        <img src="https://cdn-icons-png.flaticon.com/512/281/281991.png" alt="">
+        <h1>User-Login</h1>
+        <input type="text" name="ID" id="ID" placeholder="e.g:-Aditya_5harma" required> <br>
+        <input type="password" name="Pass" id="Pass" placeholder="Password" required>
+        <a href="Booking.html"><button>LOGIN</button></a>
+    </div>
+</body>
+</html>
