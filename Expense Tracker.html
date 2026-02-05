@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Personal Finance Tracker</title>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #6a0572;
+            --secondary-color: #a9a9a9;
+            --accent-color: #e3f2fd;
+            --background-light: #f8f9fa;
+            --background-dark: #2c3e50;
+            --text-color: #333;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s ease;
+        }
+        
+        body.dark-mode {
+            background-color: var(--background-dark);
+            color: #ecf0f1;
+        }
+
+        body.dark-mode header,
+        body.dark-mode footer {
+            background-color: #1a2430;
+        }
+
+        body.dark-mode .card,
+        body.dark-mode .alert {
+            background-color: #34495e;
+            color: #ecf0f1;
+            border-color: #44617a;
+        }
+
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background-color: #4a617c;
+            border-color: #5d7494;
+            color: #ecf0f1;
+        }
+
+        body.dark-mode .form-control::placeholder {
+            color: #bdc3c7;
+        }
+        
+        body.dark-mode .table,
+        body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) > *,
+        body.dark-mode .table-hover > tbody > tr:hover > * {
+            --bs-table-bg: #34495e;
+            --bs-table-striped-bg: #3c546a;
+            --bs-table-hover-bg: #425b74;
+            color: #ecf0f1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 60px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+        
+        .header-wave {
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+            transform: rotate(180deg);
+        }
+
+        .header-wave svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 50px;
+            fill: var(--background-light);
+        }
+        
+        body.dark-mode .header-wave svg {
+            fill: var(--background-dark);
+        }
+
+        section {
+            padding: 40px 0;
+        }
+
+        .expense-form, .expense-table, .chart-container, .container.my-4, .container.prediction-section {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            padding: 30px;
+        }
+
+        h3 {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(106, 5, 114, 0.25);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #550466;
+            border-color: #550466;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(106, 5, 114, 0.3);
+        }
+
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 10px;
+        }
+
+        .table thead tr th {
+            border-bottom: 2px solid var(--primary-color);
+            font-weight: 600;
+            color: var(--secondary-color);
+            padding-bottom: 15px;
+        }
+
+        .table tbody tr {
+            background-color: var(--background-light);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--accent-color);
+            transform: scale(1.01);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .table td {
+            padding: 15px;
+            border: none;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 600px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #spendingChart {
+            max-width: 500px;
+            max-height: 500px;
+        }
+
+        .card.border-primary {
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color) !important;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.07);
+        }
+
+        .card-body h5 {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .list-group-item {
+            border: none;
+            padding: 8px 16px;
+            background-color: var(--card-bg);
+            transition: background-color 0.2s;
+        }
+        
+        body.dark-mode .list-group-item {
+            background-color: #34495e;
+        }
+
+        .list-group-item:hover {
+            background-color: var(--accent-color);
+        }
+        
+        body.dark-mode .list-group-item:hover {
+            background-color: #425b74;
+        }
+
+        .alert-info {
+            background: linear-gradient(90deg, var(--accent-color) 60%, #f8fafc 100%);
+            border: 1px solid #b6d4fe;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        body.dark-mode .alert-info {
+            background: linear-gradient(90deg, #425b74 60%, #3a4f65 100%);
+            border: 1px solid #5d7494;
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 20px 0;
+        }
+
+        .table-row-animate {
+            animation: fadeInRow 0.8s;
+            background: var(--accent-color) !important;
+        }
+        
+        body.dark-mode .table-row-animate {
+            background: #4a617c !important;
+        }
+
+        @keyframes fadeInRow {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .dark-mode-toggle:hover {
+            background-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="text-center text-white">
+        <h1>Personal Finance Tracker</h1>
+        <p>Track your expenses and visualize your spending trends</p>
+        <div class="header-wave">
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="expense-form">
+            <h3>Enter Your Expense</h3>
+            <form id="expenseForm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="expenseAmount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="expenseAmount" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="expenseCategory" class="form-label">Category</label>
+                        <select class="form-select" id="expenseCategory" required>
+                            <option value="Food">Food</option>
+                            <option value="Transport">Transport</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Bills">Bills</option>
+                            <option value="Shopping">Shopping</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="expenseDate" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="expenseDate" required />
+                    </div>
+                </div>
+                <div class="d-grid mt-4">
+                    <button type="submit" class="btn btn-primary">Add Expense</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="expense-table">
+            <h3>Recent Expenses</h3>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenseTableBody">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="container my-4">
+            <h3>Total Expenses by Category</h3>
+            <div id="categoryTotals" class="row g-3">
+                </div>
+        </section>
+
+        <section class="chart-container">
+            <h3>Spending by Category</h3>
+            <canvas id="spendingChart"></canvas>
+        </section>
+
+        <section class="container prediction-section">
+            <h3>Predicted Expenses for Next Month</h3>
+            <div class="alert alert-info" id="predictionResult">
+                </div>
+        </section>
+    </main>
+
+    <button id="darkModeToggle" class="dark-mode-toggle">
+        <span class="sun">☀️</span>
+        <span class="moon">🌙</span>
+    </button>
+
+    <footer class="text-center py-3">
+        <p>&copy; 2025 Personal Finance Tracker</p>
+    </footer>
+
+    <script>
+        // Initial Data (can be fetched from the backend or stored locally for now)
+        let expenses = [
+            { amount: 50, category: 'Food', date: '2025-08-01' },
+            { amount: 30, category: 'Transport', date: '2025-08-02' },
+            { amount: 20, category: 'Entertainment', date: '2025-08-03' },
+            { amount: 100, category: 'Bills', date: '2025-08-04' },
+        ];
+
+        // Function to render the expenses in the table
+        function renderExpenseTable() {
+            const tableBody = document.getElementById('expenseTableBody');
+            tableBody.innerHTML = '';
+
+            // Optionally sort expenses by date descending (most recent first)
+            const sortedExpenses = expenses.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            sortedExpenses.forEach((expense) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>$${expense.amount.toFixed(2)}</td>
+                    <td>${expense.category}</td>
+                    <td>${expense.date}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Chart.js instance reference
+        let spendingChartInstance = null;
+
+        // Function to update the spending chart
+        function renderSpendingChart() {
+            const categories = ['Food', 'Transport', 'Entertainment', 'Bills', 'Shopping'];
+            const spendingData = categories.map((category) => {
+                return expenses
+                    .filter((expense) => expense.category === category)
+                    .reduce((total, expense) => total + expense.amount, 0);
+            });
+
+            const ctx = document.getElementById('spendingChart').getContext('2d');
+
+            // Destroy previous chart instance if exists
+            if (spendingChartInstance) {
+                spendingChartInstance.destroy();
+            }
+
+            spendingChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: categories,
+                    datasets: [
+                        {
+                            data: spendingData,
+                            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#F0E68C', '#FFB6C1'],
+                            hoverBackgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#F0E68C', '#FFB6C1'],
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
+                                // Display labels in a single line
+                                // Use pointStyle: 'rect' and set usePointStyle: true for horizontal legend
+                                boxWidth: 20,
+                                padding: 15,
+                                usePointStyle: true
+                            },
+                            // Set legend to horizontal layout
+                            align: 'start'
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Add subtle animation to table rows when new expense is added
+        function animateTableRow() {
+            const tableBody = document.getElementById('expenseTableBody');
+            if (tableBody.firstChild) {
+            tableBody.firstChild.classList.add('table-row-animate');
+            setTimeout(() => {
+                tableBody.firstChild.classList.remove('table-row-animate');
+            }, 800);
+            }
+        }
+
+        // Function to render total expenses by category
+        function renderCategoryTotals() {
+            const categories = ['Food', 'Transport', 'Entertainment', 'Bills', 'Shopping'];
+            const container = document.getElementById('categoryTotals');
+            container.innerHTML = '';
+
+            categories.forEach((category) => {
+                const filteredExpenses = expenses.filter((exp) => exp.category === category);
+                const total = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                if (filteredExpenses.length > 0) {
+                    const div = document.createElement('div');
+                    div.className = 'col-md-6 col-lg-4';
+                    div.innerHTML = `
+                        <div class="card border-primary mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">${category}</h5>
+                                <p class="card-text">Total: $${total.toFixed(2)}</p>
+                                <ul class="list-group list-group-flush">
+                                    ${filteredExpenses
+                                        .map(
+                                            (exp) =>
+                                                `<li class="list-group-item">Amount: $${exp.amount.toFixed(2)}, Date: ${exp.date}</li>`
+                                        )
+                                        .join('')}
+                                </ul>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(div);
+                }
+            });
+        }
+
+        // Function to predict future expenses (simplified example using last month's spending)
+        function predictFutureExpenses() {
+            // Simple prediction logic: Take average expense amount and predict next month
+            const totalSpend = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const prediction = expenses.length > 0 ? totalSpend / expenses.length : 0;
+            document.getElementById('predictionResult').innerHTML = `Based on your average spending, your predicted total expenses for next month are: <strong>$${prediction.toFixed(2)}</strong>.`;
+        }
+        
+        // Handle form submission and update all components
+        document.getElementById('expenseForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const category = document.getElementById('expenseCategory').value;
+            const date = document.getElementById('expenseDate').value;
+
+            expenses.push({ amount, category, date });
+
+            renderExpenseTable();
+            animateTableRow();
+            renderSpendingChart();
+            renderCategoryTotals();
+            predictFutureExpenses();
+
+            document.getElementById('expenseForm').reset();
+        });
+
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            // Re-render chart to adjust colors if needed
+            renderSpendingChart(); 
+        });
+
+        // Check for saved dark mode preference on page load
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Initial render of all components
+        renderExpenseTable();
+        renderSpendingChart();
+        renderCategoryTotals();
+        predictFutureExpenses();
+
+    </script>
+</body>
+</html>
