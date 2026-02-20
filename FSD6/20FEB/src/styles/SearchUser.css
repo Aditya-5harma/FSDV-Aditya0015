@@ -1,0 +1,91 @@
+.search-user-container {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.search-user-container h2 {
+  color: #333;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.search-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-input-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+  font-family: inherit;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.btn-search {
+  padding: 12px 30px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-search:hover {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+}
+
+.btn-search:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-user-container {
+    padding: 20px;
+  }
+
+  .search-user-container h2 {
+    font-size: 1.3em;
+  }
+
+  .search-input-group {
+    flex-direction: column;
+  }
+
+  .search-input,
+  .btn-search {
+    width: 100%;
+  }
+}
